@@ -24,6 +24,8 @@ type AllFruitStatus = `${Fruit}${Capitalize<Status>}`;
 
 ### 반복되는 타입 정의 없애기
 
+[[toss]Template Literal Types로 타입 안전하게 코딩하기](https://toss.tech/article/template-literal-types)
+
 #### **여기서부터는 토스 기술 블로그에서 가져온 내용들입니다**
 
 ```js
