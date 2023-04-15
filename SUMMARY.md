@@ -12,7 +12,7 @@
   - [The Basics](/typescript/basis.md)
   - [Everyday-type](/typescript/everyday-type.md)
   - [Narrowing](/typescript/narrowing.md)
-  - [More on Functions](/typescript/everyday-type.md)
+  - [More on Functions](/typescript/more-on-functions.md)
   - [Object Types](/typescript/object-types.md)
   - [Type Manipulation](/typescript/type-manipulation.md)
 
