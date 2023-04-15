@@ -13,7 +13,7 @@
   - [Everyday-type](/typescript/everyday-type.md)
   - [Narrowing](/typescript/narrowing.md)
   - [More on Functions](/typescript/everyday-type.md)
-  - [Object Types](/typescript/everyday-type.md)
+  - [Object Types](/typescript/object-types.md)
   - [Type Manipulation](/typescript/type-manipulation.md)
 
     - [Generic](/typescript/type-manipulation/generics.md)
