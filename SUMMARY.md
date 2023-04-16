@@ -3,9 +3,9 @@
 - [OtterPark 데브노트](README.md)
 
 - [Git](git/README.md)
-
-  - [Git remote](/git/remote.md)
-  - [Git branch](/git/branch.md)
+  - [About Git](/git/about.md)
+  - [Git Remote](/git/remote.md)
+  - [Git Branch](/git/branch.md)
   - [Git CLI](/git/cli.md)
 
 - [TypeScript](typescript/README.md)
