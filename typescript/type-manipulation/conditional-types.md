@@ -88,21 +88,10 @@ type Num = Flatten<number>;
 
 조건부 타입은 `infer` 키워드를 사용해서 `참`을 비교하는 타입을 추론할 수 있습니다.
 
-```tsx
-type GetReturnType<Type> = Type extends (...args: never[]) => infer Return
-  ? Return
-  : never;
-
-type Num = GetReturnType<() => number>; // type: number;
-
-type Str = GetReturnType<(x: string) => string>; // type: string;
-
-type Bools = GetReturnType<(a: boolean, b: boolean) => boolean[]>; // type: boolean[]
-```
-
 ### infer 키워드
 
 조건부 타입의 조건식이 참으로 평가될 때만 `infer` 키워드를 사용할 수 있다.
+> 제약 조건 내에서 참조 또는 반환할 변수를 정의 가능
 
 ```tsx
 T extends infer U ? X : Y
@@ -115,40 +104,85 @@ T extends infer U ? X : Y
 조금 더 이해를 높이기 위해 간단한 예제로 알아보자.
 
 ```tsx
-type WhatType<T> = T extends Array<infer U> ? U : never;
+type GetReturnType<T> = T extends (...args: never[]) => infer U ? U : never;
 
-const num: WhatType<number[]> // type: number
+type Num = GetReturnType<() => number>; // type: number
+
+type Str = GetReturnType<(x: string) => string>; // type: string
+
+type Bools = GetReturnType<(a: boolean, b: boolean) => boolean[]>; // type: boolean[]
 ```
 
-타입 변수 `U`는 `WhatType<number[]>` 으로 인해 Array 중 `any` 타입에 속하므로 타입은 `number`가 되고, `any` 타입에 속하지 않는 다른 타입은 절대 들어갈 수 없다.
+`infer` 키워드를 조건부 타입에서 사용하면 타입 매개변수`<U>`가 함수인지 여부를 확인 후 검사 과정에서 반환 타입을 변수로 만들어 R을 유추한 뒤 검사에 성공하면 반환하는 방식으로 수행됩니다.
 
-## 분산적인 조건부 타입
+## 분배법칙 조건부 타입
 
-`Generic Type` 위에서 `Conditional Type`은 `Union Type`을 만나면 분산적으로 동작합니다.
+`Generic Type` 위에서 `Conditional Type`은 `Union Type`을 만나면 분배법칙이  동작합니다.
+
+```tsx
+type IsNever<T> = [T] extends [never] ? true : false;
+```
+
+위 내용의 `IsNever`는 실제 `never` 타입인지 아닌지를 판단하는 타입입니다.
+
+그럼 다음 예제를 보자.
+
+```tsx
+type A = IsNever<never> // type: true
+type B = IsNever<boolean> // type: false
+```
+
+타입 A에 `IsNever<Never>`를 넣으면 타입이 `never`이니, 당연히 타입은 `true`가 나올 것이다. 마찬가지로 타입 B에 `IsNever<Boolean>`를 넣으면 `never` 타입이 아니니 타입은 `false` 일 것이다.
+
+그렇다면 위 `IsNever`를 아래 형식을 바꿔보자!
+
+```tsx
+type IsNever<T> = T extends never ? true : false;
+```
+
+그리고 난 후 똑같은 타입 A, B를 줬는데 결과가 다르다.
+
+```tsx
+type A = IsNever<never> // type: never
+type B = IsNever<boolean> // type: false
+```
+
+타입 A에 `IsNever<Never>`를 넣었더니 타입은 `never`가 되었고, 타입 B에 `IsNever<Boolean>`를 넣었더니 타입은 `false`가 나왔다.
+
+> 여기서 질문! 왜 그럼 우리가 생각한 대로 나오지 않았을까?
+
+일단 타입 A의 `never`는 `공집합`임과 동시에 `유니온`인데, 타입 매개변수`<T>`와 `유니온`이 만나면 분배법칙이 실행된다.
+
+어 그런데 왜? `never`가 `유니온`이야? 우리가 알던 방식이 아닌데? 라고 할 수 있겠지만, `never`는 그 자체로 `유니온`입니다.
+
+다시 돌아와서,
+
+```tsx
+type IsNever<T> = T extends never ? true : false;
+type A = IsNever<never>
+```
+
+위 예제는 앞서 말했듯이 분배법칙이 타입 매개변수`<T>`와 유니온이 만났으므로 분배법칙이 실행되며, 여기서 알아야 할건 `never extends never`는 `never`이다. `never`는 공집합이기 때문에 제네릭에 들어는 가지만 분배법칙이 일어나지 않는다. 그러므로 type A는 타입이 `never` 되는 것이다.
+
+> 우리는 우리가 의도하지 않은 분배법칙을 아래와 같이 제한할 수 있다.
+
+```tsx
+type IsNever<T> = [T] extends [never] ? true : false;  // 방법 1
+type IsNever<T> = { type: T } extends { type: never } ? true : false;  // 방법 2
+```
+
+다른 예제들도 알아보자!
 
 ```tsx
 type ToArray<Type> = Type extends any ? Type[] : never;
-
 type StrArrOrNumArr = ToArray<string | number>; // type: string[] | number[]
-```
 
-조금 더 실용적인 예제를 알아보자!
 
-```tsx
+
 type Diff<T, U> = T extends U ? never : T;  // U에 할당할 수 있는 타입을 T에서 제거
-
 type Filter<T, U> = T extends U ? T : never;  // U에 할당할 수 없는 타입을 T에서 제거
 
 type DiffAlphabet = Diff<'a' | 'b' | 'c' | 'd', 'a' | 'c' | 'f'>;  // Type: 'b' | 'd'
 type FilterAlphabet = Filter<'a' | 'b' | 'c' | 'd', 'a' | 'c' | 'f'>; // Type: 'a' | 'c'
 ```
 
-```tsx
-type Apple = {};
-type Banana = {};
-type Orange = {}
-
-type Fruits = Apple | Banana | Orange;
-type Box<T> = T extends any ? T[] : never;
-type FruitBox = Box<Fruits>; // type: Apple[] | Banana[] | Orange[]
-```
