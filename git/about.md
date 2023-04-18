@@ -84,7 +84,7 @@ Git 디렉토리 안에 있으며, 단순한 파일이고 곧 커밋할 파일�
 
 > **파일의 라이프사이클**
 >
->![git file lifecycle](./images/git-lifecycle.png)
+> <img src="./images/git-lifecycle.png" width="500"/>
 >
 > 1. 저장소에서 `git clone`을 하면 `Tracked`이면서 `Unmodified` 상태이다.
 > 2. 이후 어떤 파일을 수정하면 Git은 `Unmodified` 상테에서 `Modified` 상태로 인식한다.
