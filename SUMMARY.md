@@ -8,6 +8,12 @@
   - [Git Branch](/git/branch.md)
   - [Git CLI](/git/cli.md)
 
+- [JavaScript](javascript/README.md)
+  - [Event Loop](/javascript/event-loop.md)
+  - [Hoisting](/javascript/hoisting.md)
+  - [Scope](/javascript/scope.md)
+  - [this](/javascript/this.md)
+
 - [TypeScript](typescript/README.md)
   - [The Basics](/typescript/basis.md)
   - [Everyday-type](/typescript/everyday-type.md)
