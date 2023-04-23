@@ -13,9 +13,8 @@ TypeScript 핸드북 스터디를 진행하며, 기본 내용들을 어느정도
 - [Narrowing](/typescript/narrowing.md)
 - [More on Functions](/typescript/everyday-type.md)
 - [Object Types](/typescript/everyday-type.md)
-- [Type Manipulation](/typescript/type-manipulation.md)
 - [Class](/typescript/class.md)
-
+- [Type Manipulation](/typescript/type-manipulation.md)
   - [Generic](/typescript/type-manipulation/generics.md)
   - [Keyof Type Operator](/typescript/type-manipulation/keyof-type-operator.md)
   - [Indexed Access Type](/typescript/type-manipulation/Indexed-access-type.md)

@@ -20,9 +20,9 @@
   - [Narrowing](/typescript/narrowing.md)
   - [More on Functions](/typescript/more-on-functions.md)
   - [Object Types](/typescript/object-types.md)
-  - [Type Manipulation](/typescript/type-manipulation.md)
   - [Class](/typescript/class.md)
-
+  - [Type Manipulation](/typescript/type-manipulation.md)
+  
     - [Generic](/typescript/type-manipulation/generics.md)
     - [Keyof Type Operator](/typescript/type-manipulation/keyof-type-operator.md)
     - [Indexed Access Type](/typescript/type-manipulation/Indexed-access-type.md)
