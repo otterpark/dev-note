@@ -18,6 +18,8 @@
   - [Think in React](/react/think-in-react.md)
   - Reference
     - [useState](/react/reference/use-state.md)
+    - [useCallback](/react/reference/use-callback.md)
+    - [useMemo](/react/reference/use-memo.md)
 
 - [TypeScript](typescript/README.md)
   - [The Basics](/typescript/basis.md)
