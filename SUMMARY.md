@@ -7,6 +7,7 @@
   - [Git Remote](/git/remote.md)
   - [Git Branch](/git/branch.md)
   - [Git CLI](/git/cli.md)
+  - [Git Convention](/git/convention.md)
 
 - [JavaScript](javascript/README.md)
   - [Event Loop](/javascript/event-loop.md)
