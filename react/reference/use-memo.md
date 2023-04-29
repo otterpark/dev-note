@@ -75,7 +75,7 @@ function TodoList({ todos, tab, theme }) {
 
 이 기능이 언제 유용한지 예시를 통해 살펴보겠습니다.
 
-기본적으로 React는 컴포넌트를 다시 렌더링할 때마다 컴포넌트의 전체 바디를 다시 실행합니다. 예를 들어, 이 `TodoList`가 상태를 업데이트하거나 부모로부터 새로운 `Props`을 받으면 `filterTodos` 함수가 다시 실행됩니다:
+기본적으로 React는 컴포넌트를 다시 렌더링할 때마다 컴포넌트의 전체 바디를 다시 실행합니다. 예를 들어, 이 `TodoList`가 상태를 업데이트하거나 부모로부터 새로운 `Props`을 받으면 `filterTodos` 함수가 다시 실행됩니다.
 
 ```tsx
 function TodoList({ todos, tab, theme }) {
@@ -140,5 +140,320 @@ import { memo } from 'react';
 
 const List = memo(function List({ items }) {
   // ...
+});
+```
+
+이 변경 사항을 적용하면 모든 `Props`가 마지막 렌더링과 동일한 경우 `List`가 리렌더링을 건너뜁니다. 여기서 **계산을 캐싱하는 것이 중요하다!** `useMemo` 없이 `visibleTodos`를 계산했다고 상상해 보세요.
+
+```tsx
+export default function TodoList({ todos, tab, theme }) {
+  // theme가 변경될 때마다 다른 배열이 표시된다
+  const visibleTodos = filterTodos(todos, tab);
+  return (
+    <div className={theme}>
+      {/* 
+        따라서 List의 props는 동일하지 않으며 매번 리렌더링됩니다.
+      */}
+      <List items={visibleTodos} />
+    </div>
+  );
+}
+```
+
+위의 예에서 `filterTodos` 함수는 `{} 객체 리터럴`이 항상 새 객체를 생성하는 방식과 유사하게 **항상 다른 배열을 생성**합니다. 일반적으로는 문제가 되지 않지만, `list` `Props`은 결코 동일하지 않으며 `memo` 최적화가 작동하지 않는다는 것을 의미합니다. 바로 이때 `useMemo`가 유용합니다.
+
+```tsx
+export default function TodoList({ todos, tab, theme }) {
+  // 재렌더링 사이에 계산을 캐시하도록 React에 지시하기
+  const visibleTodos = useMemo(
+    () => filterTodos(todos, tab),
+    [todos, tab] // 따라서 이러한 종속성이 변경되지 않는 한
+  );
+  return (
+    <div className={theme}>
+      {/*
+        list에 동일한 Props이 제공되며 리렌더링을 생략할 수 있습니다.
+      */}
+      <List items={visibleTodos} />
+    </div>
+  );
+}
+```
+
+`visibleTodos` 계산을 `useMemo`로 감싸면 종속성이 변경될 때까지 리렌더링 간에 동일한 값을 갖도록 할 수 있습니다. 특별한 이유가 없는 한 계산을 `useMemo`로 래핑할 필요는 없습니다. 이 예제에서는 `memo`로 래핑된 컴포넌트에 전달하면 리렌더링을 건너뛸 수 있기 때문입니다. 이 페이지에서 자세히 설명하는 몇 가지 다른 이유도 있습니다.
+
+### 다른 hook의 종속성 메모화
+
+컴포넌트 본문에서 직접 생성된 객체에 의존하는 계산이 있다고 가정해 보자.
+
+```tsx
+function Dropdown({ allItems, text }) {
+  const searchOptions = { matchMode: 'whole-word', text };
+
+  const visibleItems = useMemo(() => {
+    return searchItems(allItems, searchOptions);
+  }, [allItems, searchOptions]); // 🚩 주의: 컴포넌트 본문에서 생성된 객체에 대한 종속성
+  // ...
+```
+
+이렇게 객체에 의존하는 것은 **메모화의 취지를 무색**하게 합니다. 컴포넌트가 리렌더링되면 컴포넌트 본문 내부의 모든 코드가 다시 실행됩니다. `searchOptions` 객체를 생성하는 코드 줄도 리렌더링할 때마다 실행됩니다. `searchOptions`는 `useMemo` 호출의 종속성이고 매번 다르기 때문에 React는 종속성이 다르다는 것을 알고 매번 `searchItems`를 다시 계산합니다.
+
+이 문제를 해결하려면 검색옵션 객체를 종속성으로 전달하기 전에 `searchOptions` 객체 자체를 메모화할 수 있습니다
+
+```tsx
+function Dropdown({ allItems, text }) {
+  const searchOptions = useMemo(() => {
+    return { matchMode: 'whole-word', text };
+  }, [text]); // ✅ 텍스트가 바뀔때만 바뀐다
+
+  const visibleItems = useMemo(() => {
+    return searchItems(allItems, searchOptions);
+  }, [allItems, searchOptions]); // ✅ allItems과 searchOptions 가 바뀔때만 바뀐다.
+  // ...
+```
+
+위의 예에서 텍스트가 변경되지 않았다면 `searchOptions` 객체도 변경되지 않습니다. 그러나 이보다 더 나은 수정 방법은 `searchOptions` 객체 선언을 `useMemo` 계산 함수 내부로 이동하는 것입니다.
+
+```tsx
+function Dropdown({ allItems, text }) {
+  const visibleItems = useMemo(() => {
+    const searchOptions = { matchMode: 'whole-word', text };
+    return searchItems(allItems, searchOptions);
+  }, [allItems, text]); // ✅ allItems과 text 가 바뀔때만 바뀐다.
+  // ...
+```
+
+이제 계산은 텍스트에 직접적으로 의존합니다(`문자열이므로 '실수로' 달라질 수 없음`)
+
+### 함수 메모화
+
+`Form` 컴포넌트가 `memo`로 감싸져 있다고 가정해봅시다. 여기에 함수를 `Props`로 전달하려고 합니다.
+
+```tsx
+export default function ProductPage({ productId, referrer }) {
+  function handleSubmit(orderDetails) {
+    post('/product/' + productId + '/buy', {
+      referrer,
+      orderDetails
+    });
+  }
+
+  return <Form onSubmit={handleSubmit} />;
+}
+```
+
+`function() {}`가 다른 객체를 생성하는 것처럼 `function() {}`와 같은 `함수 선언`과 `() => {}`와 같은 표현식은 리렌더링할 때마다 다른 함수를 생성합니다. 새 함수를 만드는 것 자체는 문제가 되지 않고 지양해야 할 일이 아닙니다. 하지만 폼 컴포넌트가 `메모화`되어 있다면 `Props`가 변경되지 않았을 때 리렌더링하는 것을 건너뛰고 싶을 것입니다. `Props`가 항상 달라지면 `메모화`의 취지가 무색해집니다.
+
+`useMemo`로 함수를 `메모화`하려면 `calculation 함수`가 다른 함수를 반환해야 합니다.
+
+```tsx
+export default function Page({ productId, referrer }) {
+  const handleSubmit = useMemo(() => {
+    return (orderDetails) => {
+      post('/product/' + productId + '/buy', {
+        referrer,
+        orderDetails
+      });
+    };
+  }, [productId, referrer]);
+
+  return <Form onSubmit={handleSubmit} />;
+}
+```
+
+무언가 투박해 보입니다. 함수를 `메모화`하는 것은 흔한 일이며, React에서는 이를 위해 특별히 hook이 내장되어 있습니다. 중첩 함수를 추가로 작성할 필요가 없도록 함수를 `useMemo` 대신 `useCallback`으로 래핑해보자.
+
+```tsx
+export default function Page({ productId, referrer }) {
+  const handleSubmit = useCallback((orderDetails) => {
+    post('/product/' + productId + '/buy', {
+      referrer,
+      orderDetails
+    });
+  }, [productId, referrer]);
+
+  return <Form onSubmit={handleSubmit} />;
+}
+```
+
+위의 두 예제는 완전히 동일합니다. `useCallback`을 사용하면 내부에 중첩된 함수를 추가로 작성하지 않아도 된다는 장점이 있습니다. 그 외에는 아무것도 하지 않습니다.
+
+## 문제 해결
+
+### 렌더링할 때마다 계산이 두 번 실행됩니다
+
+`StrictMode`에서 React는 일부 함수를 한 번이 아닌 두 번 호출합니다.
+
+```tsx
+function TodoList({ todos, tab }) {
+  // 이 컴포넌트 함수는 렌더링할 때마다 두 번 실행됩니다.
+
+  const visibleTodos = useMemo(() => {
+    // 종속성 중 하나라도 변경되면 이 계산은 두 번 실행됩니다.
+    return filterTodos(todos, tab);
+  }, [todos, tab]);
+
+  // ...
+```
+
+이는 예상되는 현상이며 코드를 손상시키지 않아야 합니다.
+
+이 개발 모드 동작은 컴포넌트를 **순수하게 유지하는 데 도움**이 됩니다. React는 호출 중 하나의 결과를 사용하고 다른 호출의 결과는 무시합니다. 컴포넌트와 계산 함수가 순수하다면 로직에 영향을 주지 않아야 합니다. 하지만 **실수로 함수를 순수하지 않게 작성한 경우 실수를 알아채고 수정하는 데 도움**이 됩니다.
+
+예를 들어, 이 순수하지 않은 함수는 `Props`로 받은 배열을 변경합니다.
+
+```tsx
+  const visibleTodos = useMemo(() => {
+    // 🚩 실수: `Props` 변형
+    todos.push({ id: 'last', text: 'Go for a walk!' });
+    const filtered = filterTodos(todos, tab);
+    return filtered;
+  }, [todos, tab]);
+```
+
+React는 함수를 두 번 호출하므로 할 일이 두 번 추가되는 것을 알 수 있습니다. 계산이 기존 객체를 변경해서는 안 되지만 계산 중에 생성한 새 객체를 변경해도 괜찮습니다. 예를 들어 `filterTodos` 함수가 항상 다른 배열을 반환하는 경우 해당 배열을 변경할 수 있습니다.
+
+```tsx
+const visibleTodos = useMemo(() => {
+    const filtered = filterTodos(todos, tab);
+    // ✅ 계산 중에 생성한 객체를 변경합니다.
+    filtered.push({ id: 'last', text: 'Go for a walk!' });
+    return filtered;
+  }, [todos, tab]);
+```
+
+### `useMemo` 호출이 객체를 반환해야 하지만 정의되지 않은 객체를 반환합니다
+
+```tsx
+ // 🔴 '() => {}'를 사용하는 화살표 함수에서는 객체를 반환할 수 없습니다.
+  const searchOptions = useMemo(() => {
+    matchMode: 'whole-word',
+    text: text
+  }, [text]);
+```
+
+JavaScript에서 `() => {`는 화살표 함수 본문을 시작하므로 `{` 중괄호는 객체의 일부가 아닙니다. 이 때문에 **객체를 반환하지 않고 실수가 발생**합니다. `({`, `})`와 같은 괄호를 추가하면 이 문제를 해결할 수 있습니다.
+
+```tsx
+// 아래 코드는 작동하지만 누군가가 다시 깨뜨리기 쉽습니다.
+const searchOptions = useMemo(() => ({
+  matchMode: 'whole-word',
+  text: text
+}), [text]);
+```
+
+하지만 이 방식은 여전히 헷갈리고 괄호를 제거하면 누군가 쉽게 실수할 수 있습니다.
+
+이러한 실수를 방지하려면 `return` 문을 명시적으로 작성하세요.
+
+```tsx
+  // ✅ 이것은 작동하고 명시적입니다.
+  const searchOptions = useMemo(() => {
+    return {
+      matchMode: 'whole-word',
+      text: text
+    };
+  }, [text]);
+```
+
+### 컴포넌트가 렌더링될 때마다 `useMemo`의 계산이 다시 실행됩니다
+
+**두 번째 인수로 종속성 배열을 지정했는지 확인**하세요!
+
+종속성 배열을 잊어버렸을 경우, `useMemo`는 매번 계산을 다시 실행합니다.
+
+```tsx
+function TodoList({ todos, tab }) {
+  // 🔴 종속성 배열이 없으므로, 매번 재계산한다.
+  const visibleTodos = useMemo(() => filterTodos(todos, tab));
+  // ...
+```
+
+아래는 종속성 배열을 두 번째 인수로 전달하는 수정된 버전입니다.
+
+```tsx
+function TodoList({ todos, tab }) {
+  // ✅ 불필요하게 재계산하지 않습니다.
+  const visibleTodos = useMemo(() => filterTodos(todos, tab), [todos, tab]);
+  // ...
+```
+
+만약 도움이 되지 않는다면 종속성 중 하나 이상이 이전 렌더링과 다르다는 문제일 수 있습니다. 종속성을 콘솔에 수동으로 로깅하여 이 문제를 디버그할 수 있습니다.
+
+```tsx
+const visibleTodos = useMemo(() => filterTodos(todos, tab), [todos, tab]);
+console.log([todos, tab]);
+```
+
+그런 다음 콘솔에서 서로 다른 리렌더된 배열을 마우스 오른쪽 버튼으로 클릭하고 두 배열 모두에 대해 `"전역 변수로 저장"`을 선택할 수 있습니다. 첫 번째 배열이 `temp1`로 저장되고 두 번째 배열이 `temp2`로 저장되었다고 가정하면 브라우저 콘솔을 사용하여 두 배열의 각 종속성이 동일한지 확인할 수 있습니다
+
+```tsx
+Object.is(temp1[0], temp2[0]); // 배열 간에 첫 번째 종속성이 동일한지?
+Object.is(temp1[1], temp2[1]); // 배열 간에 두 번째 종속성이 동일한지?
+Object.is(temp1[2], temp2[2]); // 배열 간에 모든 종속성이 동일한지?
+```
+
+어떤 종속성이 메모화를 방해하는지 찾았다면 그 종속성을 제거할 방법을 찾거나 함께 메모화해 놓으세요.
+
+### 루프에서 각 목록 항목에 대해 `useMemo`를 호출해야 하지만 허용되지 않습니다
+
+`chart` 컴포넌트가 `memo`로 감싸져 있다고 가정해 봅시다. `ReportList` 컴포넌트가 리렌더링할 때 목록의 모든 `Chart`를 리렌더링하는 것을 건너뛰고 싶을 수 있습니다. 하지만 `useMemo`를 루프에서 호출할 수는 없습니다.
+
+```tsx
+function ReportList({ items }) {
+  return (
+    <article>
+      {items.map(item => {
+        // 🔴 다음과 같이 useMemo를 루프에서 호출할 수 없습니다.
+        const data = useMemo(() => calculateReport(item), [item]);
+        return (
+          <figure key={item.id}>
+            <Chart data={data} />
+          </figure>
+        );
+      })}
+    </article>
+  );
+}
+```
+
+대신 각 항목에 대한 구성 요소를 추출하고 개별 항목에 대한 데이터를 메모화하세요.
+
+```tsx
+function ReportList({ items }) {
+  return (
+    <article>
+      {items.map(item =>
+        <Report key={item.id} item={item} />
+      )}
+    </article>
+  );
+}
+
+function Report({ item }) {
+  // ✅ 최상위 수준에서 사용 메모를 호출합니다.
+  const data = useMemo(() => calculateReport(item), [item]);
+  return (
+    <figure>
+      <Chart data={data} />
+    </figure>
+  );
+}
+```
+
+또는 `useMemo`를 제거하고 대신 `Report` 자체를 `memo`로 래핑할 수 있습니다. 항목 `Props`가 변경되지 않으면 `Report`가 리렌더링을 건너뛰므로 `chart`도 리렌더링을 건너뜁니다.
+
+```tsx
+function ReportList({ items }) {
+  // ...
+}
+
+const Report = memo(function Report({ item }) {
+  const data = calculateReport(item);
+  return (
+    <figure>
+      <Chart data={data} />
+    </figure>
+  );
 });
 ```
