@@ -17,6 +17,9 @@
 
 - [React](react/README.md)
   - [Think in React](/react/think-in-react.md)
+  - [JSX](/react/jsx.md)
+  - [StrictMode](/react/strict-mode.md)
+  - [VDOM](/react/vdom.md)
   - Reference
     - [useState](/react/reference/use-state.md)
     - [useCallback](/react/reference/use-callback.md)
