@@ -25,6 +25,9 @@
     - [useEffect](/react/reference/use-effect.md)
     - [useCallback](/react/reference/use-callback.md)
     - [useMemo](/react/reference/use-memo.md)
+    - [useContext](/react/reference/use-context.md)
+    - [useReduce](/react/reference/use-reduce.md)
+    - [useRef](/react/reference/use-ref.md)
 
 - [TypeScript](typescript/README.md)
   - [The Basics](/typescript/basis.md)

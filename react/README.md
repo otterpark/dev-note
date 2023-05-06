@@ -13,3 +13,6 @@ React 공식문서를 기반으로, 번역하여 나만의 패러프레이징으
   - [useEffect](/react/reference/use-effect.md)
   - [useCallback](/react/reference/use-callback.md)
   - [useMemo](/react/reference/use-memo.md)
+  - [useContext](/react/reference/use-context.md)
+  - [useReduce](/react/reference/use-reduce.md)
+  - [useRef](/react/reference/use-ref.md)
