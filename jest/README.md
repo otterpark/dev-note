@@ -5,4 +5,7 @@ Jest에 대해 공부하여 문서화하여 정리해 놓았습니다.
 ## 목차
 
 - [TDD와 BDD에 대해서](/jest/tdd-bdd.md)
-- [Jest](/jest/about.md)
+- [Jest about](/jest/about.md)
+- [Jest globals](/jest/globals.md)
+- [Jest expect](/jest/expect.md)
+- [Jest CLI](/jest/cli.md)

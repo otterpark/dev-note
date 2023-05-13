@@ -33,7 +33,10 @@
 
 - [Jest](react/README.md)
   - [TDD와 BDD에 대해서](/jest/tdd-bdd.md)
-  - [Jest](/jest/about.md)
+  - [Jest about](/jest/about.md)
+  - [Jest globals](/jest/globals.md)
+  - [Jest expect](/jest/expect.md)
+  - [Jest CLI](/jest/cli.md)
 
 - [TypeScript](typescript/README.md)
   - [The Basics](/typescript/basis.md)
