@@ -31,14 +31,14 @@
     - [useReduce](/react/reference/use-reduce.md)
     - [useRef](/react/reference/use-ref.md)
 
-- [Jest](react/README.md)
+- [Jest](/jest/README.md)
   - [TDD와 BDD에 대해서](/jest/tdd-bdd.md)
   - [Jest about](/jest/about.md)
   - [Jest globals](/jest/globals.md)
   - [Jest expect](/jest/expect.md)
   - [Jest CLI](/jest/cli.md)
 
-- [React Testing Library](react-testing-library/README.md)
+- [Testing Library](react-testing-library/README.md)
   - Testing Library
     - [About](/testing-library/about.md)
     - [API](/testing-library/api-queries.md)
