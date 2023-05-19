@@ -2,20 +2,20 @@
 
 - [OtterPark 데브노트](README.md)
 
-- [Git](git/README.md)
+- [Git](/git/README.md)
   - [About Git](/git/about.md)
   - [Git Remote](/git/remote.md)
   - [Git Branch](/git/branch.md)
   - [Git CLI](/git/cli.md)
   - [Git Convention](/git/convention.md)
 
-- [JavaScript](javascript/README.md)
+- [JavaScript](/javascript/README.md)
   - [Event Loop](/javascript/event-loop.md)
   - [Hoisting](/javascript/hoisting.md)
   - [Scope](/javascript/scope.md)
   - [this](/javascript/this.md)
 
-- [React](react/README.md)
+- [React](/react/README.md)
   - [Think in React](/react/think-in-react.md)
   - [JSX](/react/jsx.md)
   - [StrictMode](/react/strict-mode.md)
@@ -31,6 +31,11 @@
     - [useReduce](/react/reference/use-reduce.md)
     - [useRef](/react/reference/use-ref.md)
 
+- [Redux](/redux/README.md)
+  - [Redux 이해하기](/redux/understanding.md)
+  - Essentials
+    - [Redux 개요 및 개념](/redux/essentials/overview-concepts.md)
+
 - [Jest](/jest/README.md)
   - [TDD와 BDD에 대해서](/jest/tdd-bdd.md)
   - [Jest about](/jest/about.md)
@@ -38,7 +43,7 @@
   - [Jest expect](/jest/expect.md)
   - [Jest CLI](/jest/cli.md)
 
-- [Testing Library](react-testing-library/README.md)
+- [Testing Library](/react-testing-library/README.md)
   - Testing Library
     - [About](/testing-library/about.md)
     - [API](/testing-library/api-queries.md)
@@ -46,7 +51,7 @@
     - [About](/testing-library/react-testing-library/about.md)
     - [API](/testing-library/react-testing-library/api.md)
 
-- [TypeScript](typescript/README.md)
+- [TypeScript](/typescript/README.md)
   - [The Basics](/typescript/basis.md)
   - [Everyday-type](/typescript/everyday-type.md)
   - [Narrowing](/typescript/narrowing.md)
