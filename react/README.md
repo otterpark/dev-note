@@ -8,6 +8,10 @@ React 공식문서를 기반으로, 번역하여 나만의 패러프레이징으
 - [JSX](/react/jsx.md)
 - [StrictMode](/react/strict-mode.md)
 - [VDOM](/react/vdom.md)
+
+- Deep-Dive
+  - [React Element](/react/deep-dive/react-element.md)
+  - [React Package](/react/deep-dive/react-package.md)
 - Version Update
   - [18 Version](/react/version/18.md)
 - Reference

@@ -20,6 +20,9 @@
   - [JSX](/react/jsx.md)
   - [StrictMode](/react/strict-mode.md)
   - [VDOM](/react/vdom.md)
+  - Deep-Dive
+    - [React Element](/react/deep-dive/react-element.md)
+    - [React Package](/react/deep-dive/react-package.md)
   - Version Update
     - [18 Version](/react/version/18.md)
   - Reference
