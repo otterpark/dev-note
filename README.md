@@ -9,6 +9,9 @@
 ## 목차
 
 - [Git](git/README.md)
+- [Jest](jest/README.md)
 - [JavaScript](javascript/README.md)
 - [React](react/README.md)
+- [Redux](redux/README.md)
+- [Testing-library](testing-library/README.md)
 - [TypeScript](typescript/README.md)
