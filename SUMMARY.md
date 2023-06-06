@@ -35,9 +35,9 @@
     - [useRef](/react/reference/use-ref.md)
 
 - [Redux](/redux/README.md)
-  - [Redux 이해하기](/redux/understanding.md)
-  - Essentials
-    - [Redux 개요 및 개념](/redux/essentials/overview-concepts.md)
+  - [Understanding Redux](/redux/understanding.md)
+  - [Redux 개요 및 개념](/redux/essentials/overview-concepts.md)
+  - [Redux Toolkit](/redux/toolkit.md)
 
 - [Jest](/jest/README.md)
   - [TDD와 BDD에 대해서](/jest/tdd-bdd.md)
