@@ -40,6 +40,7 @@
   - [Redux Toolkit](/redux/toolkit.md)
 
 - [Jest](/jest/README.md)
+  - [추천하는 전역 설정](/jest/setting-global.md)
   - [TDD와 BDD에 대해서](/jest/tdd-bdd.md)
   - [Jest about](/jest/about.md)
   - [Jest globals](/jest/globals.md)
