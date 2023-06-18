@@ -44,6 +44,7 @@
 
 - [Axios](/axios/README.md)
   - [Fetch vs Axios](/axios/vs-fetch.md)
+  - [Interceptors](/axios/interceptors.md)
 
 - [Jest](/jest/README.md)
   - [추천하는 전역 설정](/jest/setting-global.md)

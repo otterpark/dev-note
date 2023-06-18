@@ -13,5 +13,6 @@
 - [JavaScript](javascript/README.md)
 - [React](react/README.md)
 - [Redux](redux/README.md)
+- [Axios](axios/README.md)
 - [Testing-library](testing-library/README.md)
 - [TypeScript](typescript/README.md)
